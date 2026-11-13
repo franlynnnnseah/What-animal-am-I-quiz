@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>What animal am I?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#efeafc;--dot:#d6cdf3;--panel:#ffffff;--ink:#1c1340;--muted:#5b5385;--edge:#1c1340;--accent:#ffcf4a;--accent-ink:#1c1340;--glow:#5b3fd0;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#120d2b;--dot:#241b52;--panel:#1d1640;--ink:#eeeaff;--muted:#b3a9dd;--edge:#8f7fe0;--glow:#ffcf4a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#120d2b;--dot:#241b52;--panel:#1d1640;--ink:#eeeaff;--muted:#b3a9dd;--edge:#8f7fe0;--glow:#ffcf4a;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;color:var(--ink);font:400 17px/1.5 Nunito,system-ui,sans-serif;min-height:100vh;display:flex;justify-content:center;padding:18px 16px 40px;background:var(--bg) radial-gradient(var(--dot) 1.5px,transparent 1.5px) 0 0/22px 22px}
+main{width:100%;max-width:480px}
+h1,h2{font-family:Fraunces,Georgia,serif;line-height:1.12;margin:0}
+h1{font-size:2.5rem;font-weight:800}
+h2{font-size:1.3rem;font-weight:600}
+.frame{border:3px solid var(--edge);border-radius:24px;box-shadow:6px 6px 0 var(--edge);background:var(--panel);overflow:hidden}
+.scene{height:230px;display:flex;align-items:center;justify-content:center;font-size:70px;letter-spacing:8px;border-bottom:3px solid var(--edge);position:relative;background:radial-gradient(circle at 28% 22%,hsl(var(--h) 70% 62%),hsl(var(--h) 60% 22%))}
+.scene::before{content:"";position:absolute;inset:0;background:radial-gradient(#fff9 1.5px,transparent 1.5px) 0 0/34px 34px,radial-gradient(#fff6 1px,transparent 1px) 17px 17px/34px 34px;opacity:.5}
+.scene span{position:relative}
+.tag{position:absolute;left:12px;top:12px;z-index:1;font:800 .75rem Nunito,sans-serif;background:var(--accent);color:var(--accent-ink);border:2px solid #1c1340;border-radius:999px;padding:2px 10px}
+.cap{padding:18px 18px 20px}
+.cap p{margin:10px 0 0;color:var(--muted)}
+.opts{display:grid;gap:12px;margin-top:22px}
+button{font:inherit;cursor:pointer}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;padding:12px 14px;border-radius:16px;border:3px solid var(--edge);background:var(--panel);color:var(--ink);box-shadow:4px 4px 0 var(--edge);font-weight:700;transition:transform .12s,box-shadow .12s}
+.opt b{flex:none;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);border:2px solid #1c1340;display:grid;place-items:center;font-size:.85rem}
+.opt:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--edge)}
+.opt:active,.opt.pick{transform:translate(4px,4px);box-shadow:0 0 0 var(--edge);background:var(--accent);color:var(--accent-ink)}
+.go{margin-top:22px;padding:14px 38px;border-radius:999px;border:3px solid #1c1340;background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:1.15rem;box-shadow:5px 5px 0 var(--edge)}
+.go:active{transform:translate(4px,4px);box-shadow:0 0 0}
+.center{text-align:center}
+:focus-visible{outline:3px solid var(--glow);outline-offset:3px}
+.idh{display:flex;justify-content:space-between;align-items:center;background:var(--accent);color:var(--accent-ink);padding:8px 16px;font:800 .8rem Nunito,sans-serif;letter-spacing:.12em;border-bottom:3px solid var(--edge)}
+.who{display:flex;gap:14px;padding:16px;align-items:center}
+.pic{flex:none;width:112px;height:112px;border:3px solid var(--edge);border-radius:16px;display:grid;place-items:center;font-size:68px;background:radial-gradient(circle at 30% 25%,hsl(265 70% 62%),hsl(265 60% 22%))}
+.who small{color:var(--muted);font-weight:700;display:block}
+.row{padding:12px 16px;border-top:2px dashed var(--edge)}
+.row b{display:block;font:800 .72rem Nunito,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.row em{display:block;margin-top:2px}
+.pair{display:flex;align-items:center;gap:10px;font-weight:800}
+.pair span{font-size:34px}
+@media (prefers-reduced-motion:no-preference){.fade{animation:f .4s ease}@keyframes f{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+var AN={
+L:{n:'Lion',e:'🦁',v:'roars',s:'Brave, takes charge in stressful situations, unafraid to voice opinions.',p:'O',r:['“ROAR! Follow me! I know the way out!”','“ROAR! Don’t worry, I’ve got your back!”'],rv:'Loud, yes, but I never felt unsafe. Mostly.'},
+O:{n:'Owl',e:'🦉',v:'hoots',s:'Wise, observant and calm. Always thinking three steps ahead.',p:'D',r:['“Hoo-hoo… let me check the stars first.”','“Hoooo… there’s a pattern here. I’ve almost got it.”'],rv:'Always three steps ahead. Please tell us the first two.'},
+D:{n:'Dolphin',e:'🐬',v:'clicks and whistles',s:'Warm, playful and tuned in to others. Keeps the whole pod together.',p:'A',r:['“Eek-eek-eek! We’re all in this together!”','“Whee-oo! Everyone okay? Let’s swim on as a pod.”'],rv:'Kept the whole crew together while I flew above it all.'},
+F:{n:'Fox',e:'🦊',v:'yips',s:'Quick-witted and resourceful. Turns any mess into a plan.',p:'E',r:['“Yip-yip! Give me two vines and a minute.”','“Ha-yip! Plan B? I already have a Plan C.”'],rv:'Fixed the ship with a spoon. I still don’t know how.'},
+E:{n:'Elephant',e:'🐘',v:'trumpets',s:'Loyal, patient and caring. The steady heart of the group.',p:'F',r:['“*Trumpet!* No one gets left behind. Take your time.”','“*Pawoooo!* Lean on me. I remember the way.”'],rv:'Carried us all the way. I only carried the snacks.'},
+A:{n:'Eagle',e:'🦅',v:'screeches',s:'Visionary and independent. Sees the big picture before anyone else.',p:'L',r:['“Skreeee! I’ll scout ahead and signal back.”','“Kee-kee-kee! The way out is above the clouds.”'],rv:'Vanishes to scout, always returns with the best route.'}
+};
+var Q=[
+['🚀☄️',255,'The alarm on your spaceship, the Wobbly Comet, goes bleep-bloop! A shower of space-pizza-sized asteroids is dead ahead. First move?',[['Grab the wheel and shout orders at the crew','L'],['Check the star charts and calculate the gaps','O'],['Make sure everyone is strapped in and calm','D'],['Rewire the thrusters with a spoon and chewing gum','F']]],
+['🌀🎶',280,'A glowing wormhole opens, humming a lullaby. The crew can’t decide whether to enter.',[['Fly in headfirst. You’ve always wanted to see what’s on the other side','A'],['Wait until everyone is ready, then go together','E'],['Scan it first and read the readings','O'],['Announce, “We’re going in!” and steer','L']]],
+['🪐🍩',300,'You crash-land on a donut-shaped planet. The only way to the Crystal Forest is a bridge of floating space rocks.',[['Hop across first and call back, “Follow me!”','L'],['Crack a joke so nobody freezes','D'],['Test each rock and steady every person across','E'],['Spot a gravity shortcut nobody else saw','F']]],
+['🌙🍄',265,'Night falls on a moon with three suns setting. You light a campfire of glowing mushrooms. Where do you end up?',[['Telling stories to keep spirits high','D'],['Quietly handing out snacks to everyone','E'],['Sitting a little apart, naming constellations','A'],['Building a shelter from giant mushroom caps','F']]],
+['👾🍓',320,'Cheeky comet gremlins snatch your last glow-berries and scamper up a space-tree!',[['Set a decoy and trick them into dropping the berries','F'],['Charge after them','L'],['Watch quietly until you spot their routine','O'],['Laugh, then offer them a trade','D']]],
+['🌈🌊',190,'A river of liquid rainbows blocks the way. The crew argues about the safest crossing.',[['Say exactly what you think, loud and clear','L'],['Calm everyone down and find the middle ground','E'],['Scout ahead alone and report back','A'],['List the pros and cons of each crossing','O']]],
+['🌧️😢',230,'A crewmate sniffles, “We’ll never find the Heart of Zoomora.”',[['Sit down and really listen to them','D'],['Stay by their side without a word','E'],['Give a fierce pep talk','L'],['Remind them how close the shimmering castle looks','A']]],
+['🔮🕳️',275,'The only way forward is a pitch-black crystal cave that hums off-key.',[['Go slowly, marking the walls as you go','O'],['Improvise a torch from glowing moss','F'],['Trust your gut and move fast','A'],['Hum along so the crew stays close','D']]],
+['🐉💨',15,'A hiccuping space dragon rises, shooting sparks with every hic.',[['Step in front of everyone','L'],['Slip into the shadows to distract it','F'],['Hold your ground and shield the crew','E'],['Stay still and work out what makes it hiccup','O']]],
+['🏰✨',45,'You reach the castle and the Heart of Zoomora glows. A portal home opens. How do you feel?',[['Excited. I’ll keep in touch with everyone forever','D'],['Ready for the next adventure','A'],['I’ll count heads first. Nobody gets left behind','E'],['I’ll step through last, once everyone is safe','L']]]
+];
+var app=document.getElementById('app'),i=0,sc,last;
+function shuf(a){a=a.slice();for(var k=a.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1)),t=a[k];a[k]=a[j];a[j]=t}return a}
+function intro(){
+app.innerHTML='<div class="fade center"><div class="frame"><div class="scene" style="--h:265"><span>🚀🌌🐾</span></div><div class="cap"><h1>What animal am I?</h1><p>The Wobbly Comet has gone off course and a wormhole is waiting. Ten choices from here to the magical realm of Zoomora to find out which animal you are!</p></div></div><button class="go" id="s">Start</button></div>';
+document.getElementById('s').onclick=function(){i=0;sc={L:0,O:0,D:0,F:0,E:0,A:0};last=[];show()}}
+function show(){
+var q=Q[i];
+app.innerHTML='<div class="fade"><div class="frame"><div class="scene" style="--h:'+q[1]+'"><span class="tag">Scene '+(i+1)+' / '+Q.length+'</span><span>'+q[0]+'</span></div><div class="cap"><h2>'+q[2]+'</h2></div></div><div class="opts"></div></div>';
+var box=app.querySelector('.opts');
+shuf(q[3]).forEach(function(o,n){var b=document.createElement('button');b.className='opt';b.innerHTML='<b>'+'ABCD'[n]+'</b><span></span>';b.lastChild.textContent=o[0];
+b.onclick=function(){b.classList.add('pick');sc[o[1]]++;last.push(o[1]);box.querySelectorAll('button').forEach(function(x){x.disabled=true});
+setTimeout(function(){i++;i<Q.length?show():result()},380)};box.appendChild(b)})}
+function result(){
+var best=0,k;for(k in sc)if(sc[k]>best)best=sc[k];
+var key=null;for(var n=last.length-1;n>=0;n--)if(sc[last[n]]===best){key=last[n];break}
+var a=AN[key],p=AN[a.p],no=('ZM-'+(1000+Math.floor(Math.random()*9000)));
+app.innerHTML='<div class="fade center"><div class="frame" style="text-align:left"><div class="idh"><span>YOUR ZOOMORA RESULT</span><span>🚀</span></div>'+
+'<div class="who"><div class="pic">'+a.e+'</div><div><small>You are a</small><h1>'+a.n+'!</h1></div></div>'+
+'<div class="row"><b>Strengths</b>'+a.s+'</div>'+
+'<div class="row"><b>Survival partner in Zoomora</b><div class="pair"><span>'+p.e+'</span>'+p.n+'</div></div>'+
+'<div class="row"><b>Some '+a.v+'</b><em>'+a.r[0]+'</em><em>'+a.r[1]+'</em></div>'+
+'<div class="row"><b>Peer review from the '+p.n+'</b><em>“'+a.rv+'”</em></div></div>'+
+'<button class="go" id="r">Play again</button></div>';
+document.getElementById('r').onclick=intro}
+intro();
+</script>
+</body>
+</html>
